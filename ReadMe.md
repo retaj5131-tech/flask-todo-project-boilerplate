@@ -13,8 +13,8 @@ Simple Flask backend boilerplate for the backend part of a fullstack development
 
 - `app.py` - Main Flask application
 - `config.py` - Environment configuration
+- `helpers.py` - Helper functions for the project
 - `requirements.txt` - Project dependencies
-
 ## Setup
 
 1. Create a virtual environment:
@@ -23,8 +23,13 @@ Simple Flask backend boilerplate for the backend part of a fullstack development
     ```
 
 2. Activate the virtual environment:
+- For linux/macOS:
     ```bash
     source venv/bin/activate
+    ```
+- For Windows:
+    ```bash
+    venv\Scripts\activate
     ```
 
 3. Install dependencies:
@@ -37,7 +42,6 @@ Simple Flask backend boilerplate for the backend part of a fullstack development
 Create a `.env` file in the project root:
 
 ```env
-SECRET_KEY=your-secret-key
 GEMINI_API_KEY=your-gemini-api-key
 ```
 
