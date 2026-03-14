@@ -6,12 +6,11 @@ import crud
 import helpers
 
 app = Flask(__name__)
-
-# Load configuration
 app.config['SECRET_KEY'] = config.SECRET_KEY
 CORS(app)
 
-# Register routes
+
+
 @app.route('/')
 def index():
     return "Hello from Flask!"
@@ -19,17 +18,15 @@ def index():
 @app.route("/todos", methods=["GET"])
 def get_todos_route():
     tasks = helpers.read_db_file()
-    return tasks
+    return jsonify(tasks)
 
 @app.route("/todos", methods=["POST"])
 def create_todo_route():
-    # create
     data = request.get_json()
     if 'description' not in data:
-        return jsonify({"error":"description required"}), 400
+        return jsonify({"error": "description required"}), 400
 
-    description = data['description']
-    new_task = crud.create_todo(description) # error or task
+    new_task = crud.create_todo(data['description'])
     if 'error' in new_task:
         return jsonify(new_task), 500
     
@@ -37,35 +34,25 @@ def create_todo_route():
 
 @app.route("/todos/<int:todo_id>", methods=["GET"])
 def get_todo_route(todo_id):
-    # get
-    task = crud.get_todo_by_id(todo_id) # task or None
+    task = crud.get_todo_by_id(todo_id)
     if task is None:
-        return jsonify({"error":"Task not found"}), 404
-
+        return jsonify({"error": "Task not found"}), 404
     return jsonify(task), 200
 
 @app.route("/todos/<int:todo_id>", methods=["PUT"])
 def update_todo_route(todo_id):
-    # update
-    task = crud.get_todo_by_id(todo_id) # task or None
-    if task is None:
-        return jsonify({"error":"Task not found"}), 404
-
     update_data = request.get_json()
     updated_task = crud.update_todo(todo_id, update_data)
-    
+    if 'error' in updated_task:
+        return jsonify(updated_task), 404
     return jsonify(updated_task), 200
 
 @app.route("/todos/<int:todo_id>", methods=["DELETE"])
 def delete_todo_route(todo_id):
-    # delete
-    task = crud.get_todo_by_id(todo_id) # task or None
-    if task is None:
-        return jsonify({"error":"Task not found"}), 404
-    crud.delete_todo(todo_id)
-
-    return jsonify({"message":"Delete process success"})
-
+    result = crud.delete_todo(todo_id)
+    if 'error' in result:
+        return jsonify(result), 404
+    return jsonify(result), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

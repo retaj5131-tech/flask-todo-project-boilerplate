@@ -9,8 +9,6 @@ if not os.path.exists(DB_FILE):
         json.dump([], f)
 
 def read_db_file():
-    if not os.path.exists(DB_FILE):
-        return []
     with open(DB_FILE, 'r', encoding='utf-8') as f:
         return json.load(f)
 
@@ -20,7 +18,9 @@ def write_db_file(data):
 
 def get_next_id():
     todos = read_db_file()
-    return len(todos) + 1
+    if not todos:
+        return 1
+    return max(todo['id'] for todo in todos) + 1
 
 def clean_gemini_response(content):
     content = content.strip()
@@ -36,3 +36,9 @@ def get_current_date_formatted():
     tz = pytz.timezone('Asia/Riyadh')
     now = datetime.datetime.now(tz)
     return now.strftime('%b %d %Y')
+
+def get_prompt(description):
+    current_time = get_current_date_formatted()
+    with open('prompt.txt', 'r', encoding='utf-8') as f:
+        prompt_template = f.read()
+    return prompt_template.format(description=description, current_time=current_time)
